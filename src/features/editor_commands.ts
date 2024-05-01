@@ -1,4 +1,5 @@
 import { Editor } from "obsidian";
+import { Notice } from "obsidian";
 import { EditorView } from "@codemirror/view";
 import { replaceRange, setCursor, setSelection } from "../utils/editor_utils";
 import LatexSuitePlugin from "src/main";
@@ -117,11 +118,26 @@ function getDisableAllFeaturesCommand(plugin: LatexSuitePlugin) {
 }
 
 
+function getToggleSnippetsCommand(plugin: LatexSuitePlugin) {
+	return {
+		id: "latex-suite-toggle-snippets",
+		name: "Toggle snippets",
+		callback: async () => {
+			plugin.settings.snippetsEnabled = !(plugin.settings.snippetsEnabled);
+			const msg = (plugin.settings.snippetsEnabled)?"enabled":"disabled";
+			new Notice(`Latex Suite: Snippets ${msg}`);
+			await plugin.saveSettings();
+		},
+	}
+}
+
+
 export const getEditorCommands = (plugin: LatexSuitePlugin) => {
 	return [
 		getBoxEquationCommand(),
 		getSelectEquationCommand(),
 		getEnableAllFeaturesCommand(plugin),
-		getDisableAllFeaturesCommand(plugin)
+		getDisableAllFeaturesCommand(plugin),
+		getToggleSnippetsCommand(plugin),
 	];
 };

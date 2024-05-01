@@ -53,7 +53,6 @@ export class LatexSuiteSettingTab extends PluginSettingTab {
 					await this.plugin.saveSettings();
 				}));
 
-
 		const snippetsSetting = new Setting(containerEl)
 			.setName("Snippets")
 			.setDesc("Enter snippets here.  Remember to add a comma after each snippet, and escape all backslashes with an extra \\. Lines starting with \"//\" will be treated as comments and ignored.")
@@ -421,6 +420,16 @@ export class LatexSuiteSettingTab extends PluginSettingTab {
 
 				await this.plugin.saveSettings();
 			}));
+
+		new Setting(containerEl)
+		.setName("Don't trigger snippets when inside a command")
+		.setDesc("Setting this to true will stop snippets from expanding when the cursor is inside of a command starting with \\")
+		.addToggle(toggle => toggle
+			.setValue(this.plugin.settings.stopCommandExpand)
+			.onChange(async (value) => {
+				this.plugin.settings.stopCommandExpand = value;
+				await this.plugin.saveSettings();
+		}));
 	}
 
 
