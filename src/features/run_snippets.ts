@@ -28,6 +28,14 @@ export const runSnippets = (view: EditorView, ctx: Context, key: string):boolean
 	return success;
 }
 
+const regexIndexOf = (text: string, offset: number, re: RegExp): number => {
+	var initial = text.substr(offset).search(re);
+	if(initial >= 0){
+		initial += offset;
+	}
+	return initial;
+}
+
 
 const runSnippetCursor = (view: EditorView, ctx: Context, key: string, range: SelectionRange):{success: boolean; shouldAutoEnlargeBrackets: boolean} => {
 
@@ -35,6 +43,90 @@ const runSnippetCursor = (view: EditorView, ctx: Context, key: string, range: Se
 	const {from, to} = range;
 	const sel = view.state.sliceDoc(from, to);
 
+	//fndbsjkf hgcjkhrukeahgjkdsvachg jklesdfhjklsdhzu hsefuio ghwerulia ghedfjls ghsdfjkl ghjskldf ghsjldfk hgjlksdf hgjlksdf hgljksdf hgjlkfsd hgjlksdfhgjlkdf hgjlkesdf hgjklsdfhg jkldsf hgjkl sdfhjklgsdhljfk. 
+
+	// //the function ctx.mode.inMath() will report false in the following sequence of characters:
+	// //$$	=> false
+	// //$\$	=> true
+	// //\a	=> false (WHY THE FUCK	Wl	dhjsakdfhkjashdjkashdjkashdjkahjkdhasjkdhasjk
+	// //\aa	=> true
+	// //the inMath function is broken, even thought the getInnerBounds fct still works
+	//
+	// const bounds = ctx.getBounds();
+	// console.log(bounds);
+	//
+	// if(bounds===null){
+	// 	console.log("not inside math expression");
+	// }else if(settings.stopCommandExpand){
+	// 	console.log("motherfucking math expression");
+	// 	const start = bounds.start;
+	// 	const end = bounds.end;
+	// 	let expr = view.state.sliceDoc(start, end).toString();
+	// 	const idx = from-1;
+	// 	if(key.length===1){
+	// 		expr = expr.slice(0, idx)+key+expr.slice(idx);
+	// 	}
+	//
+	// 	//anstatt cursor braucht es die info was ist links und was rechts vom insert cursor
+	// 	const left = expr.lastIndexOf("\\", idx);
+	//
+	// 	const text = expr.substr(left);
+	//
+	// 	const match = text.match(/\\([a-zA-Z0-9,>!;]){1,}[^ \\]/);
+	// 	// console.log(match);
+	// }
+	// return {success: false, shouldAutoEnlargeBrackets: false};
+
+	// return {success: false, shouldAutoEnlargeBrackets: false};
+	// // if(ctx.mode.inMath() && settings.stopCommandExpand){
+	// if(settings.stopCommandExpand){
+	// 	//no snippet should run if we are currently inside a latex command
+	// 	const state = view.state;
+	//
+	// 	const bounds = ctx.getInnerBounds();
+	// 	if(bounds == null){
+	// 		//moved into a empty equation ($$)
+	// 		// console.log("what the fucking shit");
+	// 	}else{
+	// 		const {start, end} = bounds;
+	// 		let expr = state.sliceDoc(start, end).toString();
+	// 		const idx = from-1;
+	// 		if(key.length===1){
+	// 			expr = expr.slice(0, idx)+key+expr.slice(idx);
+	// 		}
+	//
+	// 		//anstatt cursor braucht es die info was ist links und was rechts vom insert cursor
+	// 		const left = expr.lastIndexOf("\\", idx);
+	//
+	// 		const text = expr.substr(left);
+	// 		// console.log(text);
+	//
+	// 		const match = text.match(/\\([a-zA-Z0-9,>!;]){1,}[^ \\]/);
+	// 		if(match){
+	// 			console.log(match);
+	// 		}
+	//
+	// 		// console.log("left " + left + " value " + expr[idx]);
+	// 		//
+	// 		// const re = new RegExp(/ /);
+	// 		// const right = regexIndexOf(expr, idx, re);
+	// 		// console.log("right " + right);
+	// 		//
+	// 		// // const right = expr.indexOf("\\", idx);
+	// 		//
+	// 		// if(left!=-1){	//found start of command
+	// 		// 	if(left>0 && expr[left-1]=='\\'){	//NOT A COMMAND
+	// 		// 	}else{
+	// 		//
+	// 		// 	}
+	// 		// }
+	//
+	// 		// 	return {success: false, shouldAutoEnlargeBrackets: false};
+	// 	}
+	// }else{
+	// 	console.log("apparently not in fucking math mode");
+	// }
+	//
 	for (const snippet of settings.snippets) {
 		let effectiveLine = view.state.sliceDoc(0, to);
 
@@ -85,6 +177,11 @@ const runSnippetCursor = (view: EditorView, ctx: Context, key: string, range: Se
 		queueSnippet(view, start, to, replacement, key);
 
 		const containsTrigger = settings.autoEnlargeBracketsTriggers.some(word => replacement.contains("\\" + word));
+
+		/* console.log(snippet);
+		console.log(snippet.trigger);
+		console.log(snippet.replacement); */
+
 		return {success: true, shouldAutoEnlargeBrackets: containsTrigger};
 	}
 
